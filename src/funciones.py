@@ -115,6 +115,7 @@ def insertar_Campo(string):
         return "Este campo ya existe"
     else:
         engine.execute(f"INSERT INTO Campo (Campo) VALUES ('{string}');")
+        return "Campo Insertado"
 
 def insertar_datos_autor1(nombre, año_nacimiento,Campo ):
     """
@@ -129,8 +130,9 @@ def insertar_datos_autor1(nombre, año_nacimiento,Campo ):
             query = list(engine.execute(f"SELECT  idCampo FROM Campo WHERE Campo = '{Campo}'"))
             e = query[0][0]
             engine.execute(f"INSERT INTO Autor (nombre,año_nacimiento, Campo_idCampo) VALUES ('{nombre}', '{año_nacimiento}', '{e}');")
+            return "El autor se ha insertado en la base de datos"
     else:
-        return "El Campo no existe, meteleo en la función de arriba"
+        return "El Campo no existe, tienes que meterlo por separado"
 
 
 def insertar_frase(nombre, año_nacimiento, Campo, Frase):
@@ -146,4 +148,6 @@ def insertar_frase(nombre, año_nacimiento, Campo, Frase):
                 query = list(engine.execute(f"SELECT  idAuthor FROM Autor WHERE nombre = '{nombre}'"))
                 e = query[0][0]
                 engine.execute(f"INSERT INTO Frases (Frase, Autor_idAuthor) VALUES ('{Frase}', '{e}');")
-    
+                return "Frase insertada!!!"
+    else:
+        return "El Campo no existe, meteleo en la función de arriba"
