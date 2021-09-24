@@ -5,6 +5,8 @@ from numpy import character
 from sqlalchemy.util.langhelpers import method_is_overridden
 import src.funciones as f 
 import numpy as np
+import string
+import spacy
 
 
 
@@ -60,11 +62,9 @@ def meter_frase():
     Frase = request.form.get("Frase")
     return f.insertar_frase(nombre, año_nacimiento, Campo, Frase )
 
-
-
-
-
-
+@app.route("/Sentiment/<name>")
+def df_sentimientos(name):
+    return f.df_sentimientos(name)
 
 
 
