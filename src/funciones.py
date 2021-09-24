@@ -1,6 +1,13 @@
+from numpy import record
 import pandas as pd
 from config.configuration import engine
 import ast
+import string
+import spacy
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import regex as re
+
 
 def Autores():
     """
@@ -151,3 +158,60 @@ def insertar_frase(nombre, año_nacimiento, Campo, Frase):
                 return "Frase insertada!!!"
     else:
         return "El Campo no existe, meteleo en la función de arriba"
+
+
+
+sia = SentimentIntensityAnalyzer()
+
+def sql_dataframe(name):
+    """
+    This function calls the datbase in MySQl and returns a dataframe
+    in a column with all the phrases of that author.
+    """
+    if check("Autor", name):
+        df = pd.read_sql_query(f"""SELECT nombre, Frases.Frase
+        FROM Autor
+        INNER JOIN Frases ON Autor_idAuthor= idAuthor
+        WHERE nombre = '{name}'""", engine)
+        df1 = df.to_json()
+        b = str(df1)
+        c = re.search("\"Frase\".+",b).group(0)
+        d = c.replace("\\\\u00f3", "ó")
+        e = d.replace("\\\\u00f1", "ñ")
+        f = e.replace("'Frase'","" )
+        g = list(e.split(":"))
+        g.pop(0)
+        g.pop(0)
+        h = pd.DataFrame(g, columns = ["Frase"])
+
+        return h 
+    
+def sentimientos(df22):
+    """
+    This function returns a dataframe with the sentiment of all the phrases
+    of a given author.
+    """
+    lista = []
+    for i in df22.Frase:
+        lista.append(sia.polarity_scores(i))
+        df22 = pd.DataFrame.from_dict(lista, orient='columns')
+    return df22
+
+def df_sentimientos(name):
+    """
+    This function joins the 2 previous datfarmes and returns a json where we 
+    can see the sentiment each author has said.
+    """
+    j = sql_dataframe(f'{name}')
+    k = sentimientos(j)
+    k['Frase']= j 
+    return k.to_json()
+ 
+        
+
+       
+
+
+
+
+
